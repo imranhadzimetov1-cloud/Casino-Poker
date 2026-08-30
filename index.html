@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Texas Hold'em Poker (5 Players)</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="game-container">
+        <!-- Зона ботов вокруг стола -->
+        <div class="bots-container">
+            <div class="player-area bot-area" id="bot-0">
+                <div class="info-panel">
+                    <h3>Бот 1</h3>
+                    <p>Фишки: <span class="chips">1000</span></p>
+                    <p class="bet-info">Ставка: <span class="bet">0</span></p>
+                </div>
+                <div class="cards"></div>
+                <div class="status-bubble"></div>
+            </div>
+
+            <div class="player-area bot-area" id="bot-1">
+                <div class="info-panel">
+                    <h3>Бот 2</h3>
+                    <p>Фишки: <span class="chips">1000</span></p>
+                    <p class="bet-info">Ставка: <span class="bet">0</span></p>
+                </div>
+                <div class="cards"></div>
+                <div class="status-bubble"></div>
+            </div>
+
+            <div class="player-area bot-area" id="bot-2">
+                <div class="info-panel">
+                    <h3>Бот 3</h3>
+                    <p>Фишки: <span class="chips">1000</span></p>
+                    <p class="bet-info">Ставка: <span class="bet">0</span></p>
+                </div>
+                <div class="cards"></div>
+                <div class="status-bubble"></div>
+            </div>
+
+            <div class="player-area bot-area" id="bot-3">
+                <div class="info-panel">
+                    <h3>Бот 4</h3>
+                    <p>Фишки: <span class="chips">1000</span></p>
+                    <p class="bet-info">Ставка: <span class="bet">0</span></p>
+                </div>
+                <div class="cards"></div>
+                <div class="status-bubble"></div>
+            </div>
+        </div>
+
+        <!-- Центр стола -->
+        <div class="table-area">
+            <div class="pot-display">
+                Банк: <span id="pot">0</span>
+            </div>
+            <div class="board" id="board"></div>
+            <div class="game-phase" id="game-phase">Префлоп</div>
+        </div>
+
+        <!-- Вы (Игрок) -->
+        <div class="player-area user-area" id="user-area">
+            <div class="cards" id="user-cards"></div>
+            <div class="info-panel">
+                <h3>Вы</h3>
+                <p>Фишки: <span id="user-chips">1000</span></p>
+                <p class="bet-info">Ставка: <span id="user-bet">0</span></p>
+            </div>
+            <div class="status-bubble" id="user-status"></div>
+        </div>
+
+        <!-- Панель управления -->
+        <div class="controls" id="controls">
+            <button class="btn btn-red" id="btn-fold">Пас (Fold)</button>
+            <button class="btn btn-blue" id="btn-check-call">Чек / Колл</button>
+            <div class="raise-group">
+                <input type="number" id="raise-amount" min="10" step="10" value="50">
+                <button class="btn btn-green" id="btn-raise">Повысить (Raise)</button>
+                
+                <button class="btn btn-purple" id="btn-allin" style="background: #8e24aa;">ALL IN</button>
+
+<!-- Новая кнопка All-in -->
+
+            </div>
+        </div>
+    </div>
+
+    <!-- Результат раздачи -->
+    <div class="modal" id="result-modal">
+        <div class="modal-content">
+            <h2 id="result-title">Результаты</h2>
+            <p id="result-desc"></p>
+            <button class="btn btn-green" id="btn-next-hand">Следующая раздача</button>
+            <button class="btn btn-blue" id="btn-restart" style="display:none;">Перезапуск</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
