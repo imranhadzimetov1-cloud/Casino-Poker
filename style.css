@@ -1,229 +1,220 @@
-@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
-
 * {
     box-sizing: border-box;
     margin: 0;
     padding: 0;
-    font-family: 'Roboto', sans-serif;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
 }
 
 body {
-    background-color: #121212;
+    background-color: #1a1a1a;
     color: white;
     display: flex;
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    overflow: hidden;
+    padding: 10px;
 }
 
-.game-container {
-    width: 98vw;
-    max-width: 1200px;
-    height: 92vh;
-    background: radial-gradient(circle, #1b5e20, #0a2e0c);
+/* Игровой стол */
+.table {
+    position: relative;
+    width: 100%;
+    max-width: 900px;
+    min-height: 520px;
+    background: radial-gradient(circle, #1b5e20 0%, #0d3b11 100%);
     border: 12px solid #3e2723;
-    border-radius: 100px;
-    box-shadow: inset 0 0 60px rgba(0,0,0,0.9), 0 10px 30px rgba(0,0,0,0.7);
+    border-radius: 120px;
+    box-shadow: inset 0 0 50px rgba(0,0,0,0.8), 0 10px 30px rgba(0,0,0,0.5);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
     align-items: center;
-    position: relative;
-    padding: 15px;
+    padding: 20px;
 }
 
-/* Расположение 4 ботов по дуге сверху */
-.bots-container {
-    display: flex;
-    justify-content: space-around;
-    width: 100%;
-    position: absolute;
-    top: 15px;
-    padding: 0 20px;
-}
-
-.player-area {
+.table-center {
     display: flex;
     flex-direction: column;
     align-items: center;
-    position: relative;
-    transition: opacity 0.3s;
+    gap: 10px;
+    margin-top: auto;
+    margin-bottom: auto;
 }
 
-.player-area.folded {
-    opacity: 0.3;
+.pot-info {
+    background: rgba(0,0,0,0.6);
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 16px;
+    font-weight: bold;
+    border: 1px solid rgba(255,255,255,0.2);
 }
 
-.info-panel {
-    background: rgba(0, 0, 0, 0.7);
-    padding: 6px 12px;
-    border-radius: 8px;
-    text-align: center;
-    margin: 4px 0;
-    border: 1px solid rgba(255,255,255,0.15);
-    font-size: 13px;
-}
-
-.info-panel h3 { color: #ffca28; font-size: 14px; margin-bottom: 2px; }
-.bet-info { color: #66bb6a; font-weight: bold; }
-
-/* Карты */
-.cards {
-    display: flex;
-    gap: 4px;
-    height: 75px;
-}
-
-.board {
+.board-cards {
     display: flex;
     gap: 8px;
-    height: 85px;
-    justify-content: center;
+    min-height: 70px;
 }
 
+/* Карты */
 .card {
-    width: 52px;
-    height: 75px;
+    width: 50px;
+    height: 72px;
     background: white;
     border-radius: 6px;
-    border: 1px solid #ccc;
-    box-shadow: 2px 2px 5px rgba(0,0,0,0.6);
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    padding: 3px 5px;
-    font-size: 15px;
+    padding: 4px;
     font-weight: bold;
+    font-size: 14px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    user-select: none;
+    position: relative;
 }
 
 .card.red { color: #d32f2f; }
 .card.black { color: #212121; }
+
 .card.hidden {
-    background: repeating-linear-gradient(45deg, #1565c0, #1565c0 8px, #1e88e5 8px, #1e88e5 16px);
-    border: 2px solid white;
-    color: transparent;
+    background: linear-gradient(135deg, #b71c1c 25%, #880e4f 25%, #880e4f 50%, #b71c1c 50%, #b71c1c 75%, #880e4f 75%);
+    background-size: 10px 10px;
+    border: 2px solid #fff;
 }
 
-.card .suit-top { align-self: flex-start; }
-.card .suit-bottom { align-self: flex-end; transform: rotate(180deg); }
-
-/* Стол */
-.table-area {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    position: absolute;
-    top: 45%;
-    left: 50%;
-    transform: translate(-50%, -50%);
+.card .suit-bottom {
+    align-self: flex-end;
+    transform: rotate(180deg);
 }
 
-.pot-display {
-    background: rgba(0,0,0,0.85);
-    padding: 8px 25px;
-    border-radius: 20px;
-    font-size: 20px;
-    color: #ffd700;
-    font-weight: bold;
-    margin-bottom: 15px;
-    border: 2px solid #ffd700;
+/* Анимация переворота карт на шоудауне */
+.card.flip-anim {
+    animation: flipCard 0.5s ease-out forwards;
 }
 
-.game-phase {
-    margin-top: 10px;
-    background: rgba(255,255,255,0.15);
-    padding: 4px 12px;
-    border-radius: 8px;
-    text-transform: uppercase;
-    font-size: 12px;
+@keyframes flipCard {
+    0% {
+        transform: rotateY(90deg) scale(0.8);
+        opacity: 0.3;
+    }
+    100% {
+        transform: rotateY(0deg) scale(1);
+        opacity: 1;
+    }
 }
 
-.user-area {
-    position: absolute;
-    bottom: 80px;
+/* Игроки и Боты */
+.player-box {
+    background: rgba(0,0,0,0.7);
+    padding: 8px 12px;
+    border-radius: 10px;
+    text-align: center;
+    border: 1px solid rgba(255,255,255,0.1);
+    position: relative;
 }
 
-/* Управление */
-.controls {
-    position: absolute;
-    bottom: 10px;
-    display: flex;
-    gap: 10px;
-    background: #1e1e1e;
-    padding: 10px 15px;
-    border-radius: 12px;
-    box-shadow: 0 -4px 10px rgba(0,0,0,0.5);
-}
-
-.controls.disabled {
-    pointer-events: none;
+.player-box.folded {
     opacity: 0.4;
 }
 
-.btn {
-    padding: 10px 16px;
-    border: none;
-    border-radius: 6px;
-    font-size: 14px;
-    font-weight: bold;
-    cursor: pointer;
-    color: white;
+.cards {
+    display: flex;
+    gap: 4px;
+    justify-content: center;
+    margin-top: 5px;
+    min-height: 72px;
 }
 
-.btn-red { background: #d32f2f; }
-.btn-blue { background: #1976d2; }
-.btn-green { background: #388e3c; }
-
-.raise-group { display: flex; gap: 5px; }
-.raise-group input {
-    width: 65px;
-    border-radius: 6px;
-    border: none;
-    text-align: center;
-    font-weight: bold;
-}
-
-/* Статусы ходов */
 .status-bubble {
     position: absolute;
     top: -25px;
-    background: #fff;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #fbc02d;
     color: #000;
-    padding: 3px 10px;
+    padding: 2px 8px;
     border-radius: 10px;
     font-size: 12px;
     font-weight: bold;
     display: none;
+    white-space: nowrap;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.4);
 }
 
-/* Модальное окно */
+/* Расположение ботов */
+.bots-container {
+    display: flex;
+    justify-content: space-around;
+    width: 100%;
+}
+
+/* Управление */
+.controls {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    margin-top: 10px;
+}
+
+.controls.disabled {
+    pointer-events: none;
+    opacity: 0.6;
+}
+
+.btn {
+    padding: 8px 14px;
+    border: none;
+    border-radius: 6px;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.btn:active { transform: scale(0.95); }
+
+.btn-red { background: #e53935; }
+.btn-blue { background: #1e88e5; }
+.btn-green { background: #43a047; }
+.btn-purple { background: #8e24aa; }
+
+.raise-group {
+    display: flex;
+    gap: 4px;
+}
+
+.raise-group input {
+    width: 60px;
+    border-radius: 6px;
+    border: none;
+    padding: 4px;
+    text-align: center;
+}
+
+/* Модальное окно результатов */
 .modal {
     position: fixed;
-    top: 0; left: 0; width: 100vw; height: 100vh;
-    background: rgba(0,0,0,0.85);
+    top: 0; left: 0; right: 0; bottom: 0;
+    background: rgba(0,0,0,0.8);
     display: none;
     justify-content: center;
     align-items: center;
     z-index: 100;
 }
+
 .modal.active { display: flex; }
+
 .modal-content {
-    background: #263238;
-    padding: 30px;
+    background: #222;
+    padding: 20px;
     border-radius: 12px;
     text-align: center;
-    max-width: 450px;
-    border: 2px solid #00bcd4;
+    max-width: 400px;
+    border: 1px solid #444;
 }
-.modal-content h2 { margin-bottom: 10px; color: #ffd700; }
-.modal-content p { margin-bottom: 20px; font-size: 15px; line-height: 1.4; text-align: left; }
 
-@media (max-width: 900px) {
-    .bots-container { flex-wrap: wrap; gap: 5px; }
-    .card { width: 40px; height: 60px; font-size: 12px; }
-    .controls { bottom: 5px; scale: 0.9; }
-}
+.modal-content h2 { margin-bottom: 10px; color: #fbc02d; }
+.modal-content p { margin-bottom: 15px; line-height: 1.4; }
 
 /* Оптимизация под мобильные устройства */
 @media (max-width: 768px) {
@@ -232,19 +223,15 @@ body {
         overflow-x: hidden;
     }
 
-    /* Игровой стол */
     .table {
         min-height: 85vh;
         padding: 10px;
         border-width: 6px;
+        border-radius: 40px;
     }
 
-    /* Общие карты на столе */
-    .board-cards {
-        gap: 4px;
-    }
+    .board-cards { gap: 4px; }
 
-    /* Карты */
     .card {
         width: 42px;
         height: 60px;
@@ -256,18 +243,17 @@ body {
     .card .suit-top { font-size: 11px; }
     .card .suit-bottom { font-size: 11px; }
 
-    /* Панель управления (кнопки) */
     .controls {
         flex-wrap: wrap;
         gap: 6px;
         justify-content: center;
-        padding: 8px;
+        padding: 4px;
     }
 
     .btn {
         flex: 1 1 40%;
         padding: 10px 6px;
-        font-size: 13px;
+        font-size: 12px;
     }
 
     .raise-group {
@@ -281,16 +267,13 @@ body {
         font-size: 14px;
     }
 
-    /* Карточки игроков и ботов */
     .player-box {
-        padding: 4px 8px;
+        padding: 4px 6px;
         font-size: 11px;
     }
 
     .status-bubble {
-        font-size: 11px;
-        padding: 2px 6px;
+        font-size: 10px;
+        padding: 2px 5px;
     }
 }
-
-
