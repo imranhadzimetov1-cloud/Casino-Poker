@@ -437,3 +437,40 @@ document.getElementById('btn-restart').onclick = () => {
 
 initGame();
 startHand();
+
+// Плавное вскрытие карт на шоудауне
+async function showdown() {
+    // Отключаем кнопки управления
+    document.getElementById('controls').classList.add('disabled');
+
+    // Поочередно с паузой открываем карты каждого активного бота
+    for (let i = 1; i < PLAYERS_COUNT; i++) {
+        if (!players[i].folded) {
+            const botCardsDiv = document.querySelector(`#bot-${i-1} .cards`);
+            botCardsDiv.innerHTML = players[i].cards.map(c => getCardHTML(c, false, true)).join('');
+            
+            // Задержка 400мс между открытием карт каждого бота
+            await new Promise(res => setTimeout(res, 400));
+        }
+    }
+
+    // Даем небольшую паузу перед подведением итогов
+    await new Promise(res => setTimeout(res, 500));
+
+    let active = players.filter(p => !p.folded);
+    let bestScore = -1;
+    let winner = null;
+    let summaryText = "";
+
+    active.forEach(p => {
+        let res = evaluateHand(p.cards, boardCards);
+        summaryText += `<b>${p.name}</b>: ${res.name}<br>`;
+
+        if (res.score > bestScore) {
+            bestScore = res.score;
+            winner = p;
+        }
+    });
+
+    endHand(winner, summaryText);
+}
