@@ -11,13 +11,13 @@ const blinds = 20;
 
 function initGame() {
     players = [
-        { id: 0, name: "Вы", chips: 100000, bet: 0, cards: [], folded: false, isAllIn: false, isBot: false }
+        { id: 0, name: "Вы", chips: 1000, bet: 0, cards: [], folded: false, isAllIn: false, isBot: false }
     ];
     for (let i = 1; i < PLAYERS_COUNT; i++) {
         players.push({
             id: i,
             name: `Бот ${i}`,
-            chips: 100000,
+            chips: 1000,
             bet: 0,
             cards: [],
             folded: false,
@@ -151,7 +151,7 @@ function evaluatePreflopHand(cards) {
     return score;
 }
 
-// Умная логика принятия решений для ботов
+// Принятие решений ботами
 function botDecision(bot) {
     let toCall = currentWager - bot.bet;
     let handScore = evaluatePreflopHand(bot.cards);
@@ -161,12 +161,12 @@ function botDecision(bot) {
         handScore = evalRes.score / 10000;
     }
 
-    // Инициатива пойти All-In от самого бота
+    // Бот сам ходит ALL IN при мощной руке
     if (handScore >= 35 || (handScore > 20 && Math.random() < 0.1)) {
         return { action: 'allin' };
     }
 
-    // Ответ бота на ALL-IN (или очень крупную ставку)
+    // Ответ бота на ALL IN от игрока
     if (toCall >= bot.chips) {
         if (boardCards.length === 0) {
             let c1 = bot.cards[0].val;
@@ -174,7 +174,6 @@ function botDecision(bot) {
             let isPair = c1 === c2;
             let hasBigCard = (c1 >= 12 || c2 >= 12);
 
-            // Коллируем All-In при паре, высоком значении карт или 20% лудомании
             if (isPair || hasBigCard || Math.random() < 0.20) {
                 return { action: 'call' };
             }
@@ -187,7 +186,7 @@ function botDecision(bot) {
         }
     }
 
-    // Обычная логика ставок
+    // Обычная логика
     if (toCall === 0) {
         if (handScore > 18 && Math.random() < 0.35) {
             return { action: 'raise', amount: 30 };
@@ -387,13 +386,27 @@ function evaluateHand(hole, board) {
     return { score, name };
 }
 
-function showdown() {
+// Плавная анимация раскрытия карт на шоудауне
+async function showdown() {
+    document.getElementById('controls').classList.add('disabled');
+
     for (let i = 1; i < PLAYERS_COUNT; i++) {
         if (!players[i].folded) {
             const botCardsDiv = document.querySelector(`#bot-${i-1} .cards`);
-            botCardsDiv.innerHTML = players[i].cards.map(c => getCardHTML(c)).join('');
+            
+            let cardsHTML = players[i].cards.map(c => {
+                return `<div class="card ${c.color} flip-anim">
+                            <span class="suit-top">${c.str}${c.suit}</span>
+                            <span class="suit-bottom">${c.str}${c.suit}</span>
+                        </div>`;
+            }).join('');
+
+            botCardsDiv.innerHTML = cardsHTML;
+            await new Promise(res => setTimeout(res, 600));
         }
     }
+
+    await new Promise(res => setTimeout(res, 600));
 
     let active = players.filter(p => !p.folded);
     let bestScore = -1;
@@ -402,7 +415,7 @@ function showdown() {
 
     active.forEach(p => {
         let res = evaluateHand(p.cards, boardCards);
-        summaryText += `${p.name}: ${res.name}<br>`;
+        summaryText += `<b>${p.name}</b>: ${res.name}<br>`;
 
         if (res.score > bestScore) {
             bestScore = res.score;
@@ -437,40 +450,3 @@ document.getElementById('btn-restart').onclick = () => {
 
 initGame();
 startHand();
-
-// Плавное вскрытие карт на шоудауне
-async function showdown() {
-    // Отключаем кнопки управления
-    document.getElementById('controls').classList.add('disabled');
-
-    // Поочередно с паузой открываем карты каждого активного бота
-    for (let i = 1; i < PLAYERS_COUNT; i++) {
-        if (!players[i].folded) {
-            const botCardsDiv = document.querySelector(`#bot-${i-1} .cards`);
-            botCardsDiv.innerHTML = players[i].cards.map(c => getCardHTML(c, false, true)).join('');
-            
-            // Задержка 400мс между открытием карт каждого бота
-            await new Promise(res => setTimeout(res, 400));
-        }
-    }
-
-    // Даем небольшую паузу перед подведением итогов
-    await new Promise(res => setTimeout(res, 500));
-
-    let active = players.filter(p => !p.folded);
-    let bestScore = -1;
-    let winner = null;
-    let summaryText = "";
-
-    active.forEach(p => {
-        let res = evaluateHand(p.cards, boardCards);
-        summaryText += `<b>${p.name}</b>: ${res.name}<br>`;
-
-        if (res.score > bestScore) {
-            bestScore = res.score;
-            winner = p;
-        }
-    });
-
-    endHand(winner, summaryText);
-}
