@@ -151,7 +151,7 @@ function evaluatePreflopHand(cards) {
     return score;
 }
 
-// Принятие решений ботами
+// Умная логика принятия решений для ботов
 function botDecision(bot) {
     let toCall = currentWager - bot.bet;
     let handScore = evaluatePreflopHand(bot.cards);
@@ -161,12 +161,12 @@ function botDecision(bot) {
         handScore = evalRes.score / 10000;
     }
 
-    // Бот сам ходит ALL IN при мощной руке
+    // Инициатива пойти All-In от самого бота
     if (handScore >= 35 || (handScore > 20 && Math.random() < 0.1)) {
         return { action: 'allin' };
     }
 
-    // Ответ бота на ALL IN от игрока
+    // Ответ бота на ALL-IN (или очень крупную ставку)
     if (toCall >= bot.chips) {
         if (boardCards.length === 0) {
             let c1 = bot.cards[0].val;
@@ -174,6 +174,7 @@ function botDecision(bot) {
             let isPair = c1 === c2;
             let hasBigCard = (c1 >= 12 || c2 >= 12);
 
+            // Коллируем All-In при паре, высоком значении карт или 20% лудомании
             if (isPair || hasBigCard || Math.random() < 0.20) {
                 return { action: 'call' };
             }
@@ -186,7 +187,7 @@ function botDecision(bot) {
         }
     }
 
-    // Обычная логика
+    // Обычная логика ставок
     if (toCall === 0) {
         if (handScore > 18 && Math.random() < 0.35) {
             return { action: 'raise', amount: 30 };
@@ -386,27 +387,13 @@ function evaluateHand(hole, board) {
     return { score, name };
 }
 
-// Плавная анимация раскрытия карт на шоудауне
-async function showdown() {
-    document.getElementById('controls').classList.add('disabled');
-
+function showdown() {
     for (let i = 1; i < PLAYERS_COUNT; i++) {
         if (!players[i].folded) {
             const botCardsDiv = document.querySelector(`#bot-${i-1} .cards`);
-            
-            let cardsHTML = players[i].cards.map(c => {
-                return `<div class="card ${c.color} flip-anim">
-                            <span class="suit-top">${c.str}${c.suit}</span>
-                            <span class="suit-bottom">${c.str}${c.suit}</span>
-                        </div>`;
-            }).join('');
-
-            botCardsDiv.innerHTML = cardsHTML;
-            await new Promise(res => setTimeout(res, 600));
+            botCardsDiv.innerHTML = players[i].cards.map(c => getCardHTML(c)).join('');
         }
     }
-
-    await new Promise(res => setTimeout(res, 600));
 
     let active = players.filter(p => !p.folded);
     let bestScore = -1;
@@ -415,7 +402,7 @@ async function showdown() {
 
     active.forEach(p => {
         let res = evaluateHand(p.cards, boardCards);
-        summaryText += `<b>${p.name}</b>: ${res.name}<br>`;
+        summaryText += `${p.name}: ${res.name}<br>`;
 
         if (res.score > bestScore) {
             bestScore = res.score;
