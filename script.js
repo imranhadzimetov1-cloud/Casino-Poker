@@ -11,13 +11,13 @@ const blinds = 20;
 
 function initGame() {
     players = [
-        { id: 0, name: "Вы", chips: 10000, bet: 0, cards: [], folded: false, isAllIn: false, isBot: false }
+        { id: 0, name: "Вы", chips: 1000, bet: 0, cards: [], folded: false, isAllIn: false, isBot: false }
     ];
     for (let i = 1; i < PLAYERS_COUNT; i++) {
         players.push({
             id: i,
             name: `Бот ${i}`,
-            chips: 10000,
+            chips: 1000,
             bet: 0,
             cards: [],
             folded: false,
