@@ -16,7 +16,7 @@ function initGame() {
     for (let i = 1; i < PLAYERS_COUNT; i++) {
         players.push({
             id: i,
-            name: `Бот ${i}`,
+            name: `Игрок ${i}`,
             chips: 50000,
             bet: 0,
             cards: [],
